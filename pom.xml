@@ -15,5 +15,6 @@
         <module>opa-client-api</module>
         <module>spring-security-opa-test</module>
         <module>tinkerpop-opa-plugin</module>
+        <module>tinkerpop-kube-graphmanager</module>
     </modules>
 </project>
