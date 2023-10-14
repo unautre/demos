@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jgraph-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: jgraph-reader
+rules:
+- apiGroups: ["bandarlog.dev"] # "" indicates the core API group
+  resources: ["jgraphs"]
+  verbs: ["get", "watch", "list", "edit", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-jgraphs
+subjects:
+- kind: ServiceAccount
+  name: jgraph-sa
+roleRef:
+  kind: ClusterRole
+  name: jgraph-reader
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: janusgraph
+  labels:
+    app: janusgraph
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: janusgraph
+  template:
+    metadata:
+      labels:
+        app: janusgraph
+    spec:
+      containers:
+      - name: janusgraph
+        image: janusgraph/janusgraph:0.5.3
+        ports:
+        - containerPort: 8182
