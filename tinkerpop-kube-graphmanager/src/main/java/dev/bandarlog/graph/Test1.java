@@ -1,10 +1,15 @@
 package dev.bandarlog.graph;
 
-import io.fabric8.kubernetes.api.model.GenericKubernetesResource;
+import java.util.UUID;
+
+import dev.bandarlog.graph.JGraph.JGraphStatus;
+import io.fabric8.kubernetes.api.model.KubernetesResourceList;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import io.fabric8.kubernetes.client.Watcher;
 import io.fabric8.kubernetes.client.WatcherException;
+import io.fabric8.kubernetes.client.dsl.MixedOperation;
+import io.fabric8.kubernetes.client.dsl.Resource;
 import io.fabric8.kubernetes.client.dsl.base.ResourceDefinitionContext;
 
 public class Test1 {
@@ -20,11 +25,23 @@ public class Test1 {
 				.withVersion("v1")
 				.build();
 		
-		client.genericKubernetesResources(context).watch(new Watcher<GenericKubernetesResource>() {
+		final MixedOperation<JGraph, KubernetesResourceList<JGraph>, Resource<JGraph>> graphClient = client.resources(JGraph.class);
+		
+		graphClient.watch(new Watcher<JGraph>() {
 
 			@Override
-			public void eventReceived(Action action, GenericKubernetesResource resource) {
-				System.out.println("received: " + action + " - " + resource);
+			public void eventReceived(Action action, JGraph resource) {
+				System.out.println("received: " + action + " - " + resource.getMetadata().getName());
+				
+//				String lastAppliedConfiguration = resource.getMetadata().getAnnotations().get("kubectl.kubernetes.io/last-applied-configuration");
+//				System.out.println("\tBefore: " + lastAppliedConfiguration);
+				
+				System.out.println("\tNow: " + resource.getSpec().configuration);
+				
+				resource.setStatus(new JGraphStatus());
+				resource.getStatus().status = "Written: " + UUID.randomUUID();
+				
+				graphClient.resource(resource).update();
 			}
 
 			@Override
