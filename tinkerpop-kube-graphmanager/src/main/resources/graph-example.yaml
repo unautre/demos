@@ -1,4 +1,4 @@
-apiVersion: bandarlog.dev/v1
+apiVersion: bandar-log.dev/v1
 kind: JGraph
 metadata:
   name: graph-example
