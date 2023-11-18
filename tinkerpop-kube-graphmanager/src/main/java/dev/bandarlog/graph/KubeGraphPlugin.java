@@ -21,6 +21,23 @@ import io.fabric8.kubernetes.client.WatcherException;
 
 public class KubeGraphPlugin implements GremlinPlugin {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(KubeGraphPlugin.class);
+	
+	public static KubeGraphPlugin instance() {
+		final KubeGraphPlugin plugin = new KubeGraphPlugin();
+		
+		try {
+			plugin.start();
+		} catch (Exception exc) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("Could not load KubeGraphPlugin", exc);
+			}
+			throw exc;
+		}
+		
+		return plugin;
+	}
+	
 	@Override
 	public String getName() {
 		return "KubeGraphPlugin";
@@ -28,8 +45,6 @@ public class KubeGraphPlugin implements GremlinPlugin {
 
 	@Override
 	public Optional<Customizer[]> getCustomizers(String scriptEngineName) {
-		start();
-
 		return Optional.empty();
 	}
 
