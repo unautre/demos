@@ -19,5 +19,6 @@
 		<module>tinkerpop-opa-plugin</module>
 		<module>tinkerpop-kube-graphmanager</module>
 		<module>auto-indexer</module>
+		<module>test-netty</module>
 	</modules>
 </project>
