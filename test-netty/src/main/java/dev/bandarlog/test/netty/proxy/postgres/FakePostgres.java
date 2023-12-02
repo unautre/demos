@@ -19,7 +19,7 @@ public final class FakePostgres {
 		final EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 		final EventLoopGroup workerGroup = new NioEventLoopGroup();
 		try {
-			ServerBootstrap b = new ServerBootstrap() //
+			final ServerBootstrap b = new ServerBootstrap() //
 					.group(bossGroup, workerGroup) //
 					.channel(NioServerSocketChannel.class) //
 					.handler(new LoggingHandler(LogLevel.TRACE)) //
@@ -40,8 +40,8 @@ public final class FakePostgres {
 		protected void initChannel(SocketChannel ch) throws Exception {
 			ch.pipeline().addLast( //
 					new LoggingHandler(LogLevel.ERROR), //
-					new PostgresRequestDecoder(), //
 					new PostgresResponseEncoder(), //
+					new PostgresRequestDecoder(), //
 					new PostgresServerMock() //
 			);
 		}
