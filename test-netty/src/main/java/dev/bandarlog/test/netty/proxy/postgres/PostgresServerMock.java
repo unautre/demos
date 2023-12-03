@@ -120,11 +120,4 @@ public class PostgresServerMock extends SimpleChannelInboundHandler<PostgresMess
 			ctx.close().addListener(FIRE);
 		}
 	}
-
-	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		System.err.println("Caught exception in " + this.getClass() + ": ");
-		cause.printStackTrace(System.err);
-		super.exceptionCaught(ctx, cause);
-	}
 }

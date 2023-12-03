@@ -59,7 +59,7 @@ public class ProxyFrontendHandler extends ChannelInboundHandlerAdapter {
 					inboundChannel.read();
 				} else {
 					if (LOGGER.isErrorEnabled()) {
-						LOGGER.error("Could not connect to proxy target {}:{} : {}", remoteHost, remotePort, future.cause());
+						LOGGER.error("Could not connect to proxy target {}:{}", remoteHost, remotePort, future.cause());
 					}
 					// Close the connection if the connection attempt has failed.
 					inboundChannel.close();
