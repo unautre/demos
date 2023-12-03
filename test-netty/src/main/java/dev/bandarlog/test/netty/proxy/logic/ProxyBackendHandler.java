@@ -1,4 +1,4 @@
-package dev.bandarlog.test.netty.proxy.http;
+package dev.bandarlog.test.netty.proxy.logic;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -6,11 +6,11 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-public class HttpProxyBackendHandler extends ChannelInboundHandlerAdapter {
+public class ProxyBackendHandler extends ChannelInboundHandlerAdapter {
 
     private final Channel inboundChannel;
 
-    public HttpProxyBackendHandler(Channel inboundChannel) {
+    public ProxyBackendHandler(Channel inboundChannel) {
         this.inboundChannel = inboundChannel;
     }
 

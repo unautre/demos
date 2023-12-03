@@ -1,4 +1,4 @@
-package dev.bandarlog.test.netty.proxy.http;
+package dev.bandarlog.test.netty.proxy.logic;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,9 +8,12 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.socket.SocketChannel;
 
 public class ProxyFrontendHandler extends ChannelInboundHandlerAdapter {
 
@@ -24,10 +27,13 @@ public class ProxyFrontendHandler extends ChannelInboundHandlerAdapter {
 	// the outboundChannel will use the same EventLoop (and therefore Thread) as the
 	// inboundChannel.
 	private Channel outboundChannel;
+	
+	private ChannelHandler delegate;
 
-	public ProxyFrontendHandler(String remoteHost, int remotePort) {
+	public ProxyFrontendHandler(String remoteHost, int remotePort, ChannelHandler delegate) {
 		this.remoteHost = remoteHost;
 		this.remotePort = remotePort;
+		this.delegate = delegate;
 	}
 
 	@Override
@@ -38,7 +44,7 @@ public class ProxyFrontendHandler extends ChannelInboundHandlerAdapter {
 		final Bootstrap b = new Bootstrap() //
 				.group(inboundChannel.eventLoop()) //
 				.channel(ctx.channel().getClass()) //
-				.handler(new HttpProxyServerInitializer(inboundChannel)) //
+				.handler(new ProxyServerInitializer(delegate, inboundChannel)) //
 				.option(ChannelOption.AUTO_READ, false);
 		final ChannelFuture f = b.connect(remoteHost, remotePort);
 		outboundChannel = f.channel();

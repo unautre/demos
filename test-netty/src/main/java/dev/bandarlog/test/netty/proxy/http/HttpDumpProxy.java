@@ -1,13 +1,22 @@
 package dev.bandarlog.test.netty.proxy.http;
 
+import dev.bandarlog.test.netty.proxy.logic.ProxyFrontendHandler;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.ServerChannel;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpClientCodec;
+import io.netty.handler.codec.http.HttpRequestDecoder;
+import io.netty.handler.codec.http.HttpRequestEncoder;
+import io.netty.handler.codec.http.HttpResponseDecoder;
+import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.incubator.channel.uring.IOUringEventLoopGroup;
 import io.netty.incubator.channel.uring.IOUringServerSocketChannel;
 
@@ -57,6 +66,41 @@ public final class HttpDumpProxy {
 		} finally {
 			bossGroup.shutdownGracefully();
 			workerGroup.shutdownGracefully();
+		}
+	}
+	
+	public static class HttpProxyClientInitializer extends ChannelInitializer<SocketChannel> {
+
+		private final String remoteHost;
+		private final int remotePort;
+
+		public HttpProxyClientInitializer(String remoteHost, int remotePort) {
+			this.remoteHost = remoteHost;
+			this.remotePort = remotePort;
+		}
+
+		@Override
+		public void initChannel(SocketChannel ch) {
+			ch.pipeline().addLast( //
+					new HttpServerCodec(),
+//					new HttpRequestDecoder(), //
+//					new HttpObjectAggregator(65536), //
+//					new HttpResponseEncoder(), //
+					new ProxyLogicHandler(), //
+					new ProxyFrontendHandler(remoteHost, remotePort, new HttpProxyServerInitializer()) //
+			);
+		}
+	}
+	
+	public static class HttpProxyServerInitializer extends ChannelInitializer<SocketChannel> {
+
+		@Override
+		protected void initChannel(SocketChannel ch) throws Exception {
+			ch.pipeline().addLast( //
+//					new HttpResponseDecoder(), //
+//					new HttpRequestEncoder() //
+					new HttpClientCodec()
+			);
 		}
 	}
 }
