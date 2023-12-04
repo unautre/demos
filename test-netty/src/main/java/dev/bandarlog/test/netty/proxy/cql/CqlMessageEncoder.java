@@ -3,6 +3,8 @@ package dev.bandarlog.test.netty.proxy.cql;
 import static dev.bandarlog.test.netty.proxy.cql.CqlUtils.*;
 
 import dev.bandarlog.test.netty.proxy.cql.CassandraMessages.Options;
+import dev.bandarlog.test.netty.proxy.cql.CassandraMessages.Ready;
+import dev.bandarlog.test.netty.proxy.cql.CassandraMessages.Register;
 import dev.bandarlog.test.netty.proxy.cql.CassandraMessages.Startup;
 import dev.bandarlog.test.netty.proxy.cql.CassandraMessages.Supported;
 import io.netty.buffer.ByteBuf;
@@ -16,36 +18,34 @@ public class CqlMessageEncoder extends MessageToByteEncoder<CassandraMessages> {
 		out.writeByte((byte) (msg.version | (msg.response ? 128 : 0)));
 		out.writeByte(msg.flags);
 		out.writeShort(msg.stream);
+		out.writeByte(msg.opcode);
+		
+		// length is just after opcode
+		final int bodyLengthIndex = out.writerIndex();
+		out.writeInt(0);
 		
 		if (msg instanceof Startup) {
 			final Startup startup = (Startup) msg;
 			
-			out.writeByte(1);
-			out.writeInt(0);
-			
-			final int bodyLengthIndex = out.writerIndex();
-			out.writeInt(0);
-			
 			writeStringMap(out, startup.payload);
-			
-			final int bodyLength = out.writerIndex() - bodyLengthIndex - 4;
-			out.setInt(bodyLengthIndex, bodyLength);
+		} else if (msg instanceof Ready) {
+			// NOP
 		} else if (msg instanceof Options) {
-			out.writeByte(5);
-			out.writeInt(0);
+			// NOP
 		} else if (msg instanceof Supported) {
 			final Supported supported = (Supported) msg;
 			
-			out.writeByte(6);
-			
-			final int bodyLengthIndex = out.writerIndex();
-			out.writeInt(0);
-			
 			writeStringMultiMap(out, supported.payload);
+		} else if (msg instanceof Register) {
+			final Register register = (Register) msg;
 			
-			final int bodyLength = out.writerIndex() - bodyLengthIndex - 4;
-			out.setInt(bodyLengthIndex, bodyLength);
+			writeStringList(out, register.eventTypes);
+		} else {
+			System.out.println("Unrecognized message " + msg);
 		}
+		
+		final int bodyLength = out.writerIndex() - bodyLengthIndex - 4;
+		out.setInt(bodyLengthIndex, bodyLength);
 	}
 	
 	@Override
