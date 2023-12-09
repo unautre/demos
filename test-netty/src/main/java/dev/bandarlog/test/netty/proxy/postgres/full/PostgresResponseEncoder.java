@@ -1,19 +1,19 @@
-package dev.bandarlog.test.netty.proxy.postgres;
+package dev.bandarlog.test.netty.proxy.postgres.full;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.AuthenticationCleartextPassword;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.AuthenticationOK;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.BackendKeyData;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.CommandComplete;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.DataRow;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.NoSSLResponseMessage;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.ReadyForQuery;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.RowDescription;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.RowDescription.InnerRowDescription;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.SSLResponseMessage;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.AuthenticationCleartextPassword;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.AuthenticationOK;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.BackendKeyData;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.CommandComplete;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.DataRow;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.NoSSLResponseMessage;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.ReadyForQuery;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.RowDescription;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.SSLResponseMessage;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.RowDescription.InnerRowDescription;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;

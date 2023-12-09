@@ -1,4 +1,4 @@
-package dev.bandarlog.test.netty.proxy.postgres;
+package dev.bandarlog.test.netty.proxy.postgres.full;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +15,20 @@ public abstract class PostgresMessages {
 			public Map<String, String> payload;
 		}
 
-		public static class SSLNegociationMessage extends StartupMessage {
+		public static class SSLNegociationMessage extends RequestMessages {
 
 			public static final int SSL_NEGOCIATION_PROTOCOL_VERSION = 80877103;
+		}
+		
+		public static class CancelRequestMessage extends RequestMessages {
+			
+			public static final int CANCEL_REQUEST_PROTOCOL_VERSION = 80877102;
+			
+			public int version;
+			
+			public int processId;
+			
+			public int secretKey;
 		}
 
 		public static class PasswordMessage extends RequestMessages {

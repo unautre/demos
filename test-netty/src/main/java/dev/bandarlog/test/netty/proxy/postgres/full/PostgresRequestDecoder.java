@@ -1,16 +1,17 @@
-package dev.bandarlog.test.netty.proxy.postgres;
+package dev.bandarlog.test.netty.proxy.postgres.full;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.RequestMessages.PasswordMessage;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.RequestMessages.Query;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.RequestMessages.SSLNegociationMessage;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.RequestMessages.StartupMessage;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.RequestMessages.Sync;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.RequestMessages.Terminate;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.RequestMessages.CancelRequestMessage;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.RequestMessages.PasswordMessage;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.RequestMessages.Query;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.RequestMessages.SSLNegociationMessage;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.RequestMessages.StartupMessage;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.RequestMessages.Sync;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.RequestMessages.Terminate;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -39,27 +40,33 @@ public class PostgresRequestDecoder extends ByteToMessageDecoder {
 
 			final int protocolVersion = in.readInt();
 
-			final StartupMessage msg;
-			if (protocolVersion == SSLNegociationMessage.SSL_NEGOCIATION_PROTOCOL_VERSION) {
-				msg = new SSLNegociationMessage();
+			if (protocolVersion == CancelRequestMessage.CANCEL_REQUEST_PROTOCOL_VERSION) {
+				final CancelRequestMessage msg = new CancelRequestMessage();
+
+				msg.processId = in.readInt();
+				msg.secretKey = in.readInt();
+
+				out.add(msg);
+			} else if (protocolVersion == SSLNegociationMessage.SSL_NEGOCIATION_PROTOCOL_VERSION) {
+				out.add(new SSLNegociationMessage());
 			} else {
-				msg = new StartupMessage();
 				waitingForStartup = false;
+
+				final StartupMessage msg = new StartupMessage();
+				msg.version = protocolVersion;
+				msg.payload = new LinkedHashMap<>();
+
+				// read headers
+				// null terminator is expected at the end
+				while (in.readableBytes() > 1) {
+					final String key = readCString(in);
+					final String value = readCString(in);
+
+					msg.payload.put(key, value);
+				}
+
+				out.add(msg);
 			}
-
-			msg.version = protocolVersion;
-			msg.payload = new LinkedHashMap<>();
-
-			// read headers
-			// null terminator is expected at the end
-			while (in.readableBytes() > 1) {
-				final String key = readCString(in);
-				final String value = readCString(in);
-
-				msg.payload.put(key, value);
-			}
-
-			out.add(msg);
 		} else {
 			// all other messages begin with a letter, and a size (32bit).
 			if (in.readableBytes() < 5)

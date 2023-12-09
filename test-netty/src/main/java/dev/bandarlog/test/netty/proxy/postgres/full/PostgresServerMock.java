@@ -1,22 +1,23 @@
-package dev.bandarlog.test.netty.proxy.postgres;
+package dev.bandarlog.test.netty.proxy.postgres.full;
 
 import java.util.Map.Entry;
 
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.RequestMessages.PasswordMessage;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.RequestMessages.Query;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.RequestMessages.SSLNegociationMessage;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.RequestMessages.StartupMessage;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.RequestMessages.Terminate;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.AuthenticationCleartextPassword;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.AuthenticationOK;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.BackendKeyData;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.CommandComplete;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.DataRow;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.NoSSLResponseMessage;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.ReadyForQuery;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.RowDescription;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.ReadyForQuery.TransactionStatusIndicatorEnum;
-import dev.bandarlog.test.netty.proxy.postgres.PostgresMessages.ResponseMessages.RowDescription.InnerRowDescription;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.RequestMessages.CancelRequestMessage;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.RequestMessages.PasswordMessage;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.RequestMessages.Query;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.RequestMessages.SSLNegociationMessage;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.RequestMessages.StartupMessage;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.RequestMessages.Terminate;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.AuthenticationCleartextPassword;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.AuthenticationOK;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.BackendKeyData;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.CommandComplete;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.DataRow;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.NoSSLResponseMessage;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.ReadyForQuery;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.RowDescription;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.ReadyForQuery.TransactionStatusIndicatorEnum;
+import dev.bandarlog.test.netty.proxy.postgres.full.PostgresMessages.ResponseMessages.RowDescription.InnerRowDescription;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -25,13 +26,15 @@ public class PostgresServerMock extends SimpleChannelInboundHandler<PostgresMess
 
 	private static final ChannelFutureListener FIRE = ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE;
 
-	private enum CnxState {
-		WAITING_FOR_STARTUP, AUTHENTICATION_IN_PROGRESS,
-	}
-
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, PostgresMessages msg) throws Exception {
-		if (msg instanceof SSLNegociationMessage) {
+		if (msg instanceof CancelRequestMessage) {
+			final CancelRequestMessage cancel = (CancelRequestMessage) msg;
+			
+			System.out.println("Receiving cancel request for " + cancel.processId + "/" + cancel.secretKey);
+			
+			ctx.close().addListener(FIRE);
+		} else if (msg instanceof SSLNegociationMessage) {
 			ctx.writeAndFlush(new NoSSLResponseMessage()).addListener(FIRE);
 		} else if (msg instanceof StartupMessage) {
 			final StartupMessage startup = (StartupMessage) msg;

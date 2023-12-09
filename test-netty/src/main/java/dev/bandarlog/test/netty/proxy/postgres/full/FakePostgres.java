@@ -1,4 +1,4 @@
-package dev.bandarlog.test.netty.proxy.postgres;
+package dev.bandarlog.test.netty.proxy.postgres.full;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
