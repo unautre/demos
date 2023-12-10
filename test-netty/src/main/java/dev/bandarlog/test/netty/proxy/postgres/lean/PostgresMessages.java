@@ -2,6 +2,7 @@ package dev.bandarlog.test.netty.proxy.postgres.lean;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -36,8 +37,21 @@ public class PostgresMessages extends DefaultByteBufHolder {
 			return content().getInt(4);
 		}
 
-		public Iterator<Map.Entry<String, String>> getPayload() {
-			return null; // TODO
+		public Map<String, String> getPayload() {
+			final ByteBuf buf = content();
+			buf.readerIndex(8);
+			
+			final Map<String, String> map = new HashMap<>();
+			while (buf.isReadable()) {
+				final String key = readCString(buf);
+				final String value = readCString(buf);
+				
+				map.put(key, value);
+			}
+			
+			buf.readerIndex(0);
+			
+			return map;
 		}
 	}
 
@@ -78,6 +92,63 @@ public class PostgresMessages extends DefaultByteBufHolder {
 
 		public Terminate(ByteBuf data) {
 			super(data);
+		}
+	}
+	
+	public static class AuthenticationResponse extends PostgresMessages {
+		
+		public AuthenticationResponse(ByteBuf data) {
+			super(data);
+		}
+		
+		enum AuthenticationResponseType {
+			OK(0), //
+			KERBEROS_V5(2), //
+			CLEARTEXT(3), //
+			MD5(5), //
+			GSS(7), //
+			GSS_CONTINUE(8), //
+			SSPI(9), //
+			SASL(10), //
+			SASL_CONTINUE(11), //
+			SASL_FINAL(12), //
+			;
+			
+			private final int value;
+			
+			private AuthenticationResponseType(int value) {
+				this.value = value;
+			}
+		}
+	}
+	
+	public static class ParameterStatus extends PostgresMessages {
+		
+		private int parameterValueIndex = -1;
+		
+		public ParameterStatus(ByteBuf data) {
+			super(data);
+		}
+		
+		public String getParameterName() {
+			final ByteBuf content = content();
+			
+			content.readerIndex(PAYLOAD_START);
+			final String name = readCString(content);
+			
+			parameterValueIndex = content.readerIndex();
+			
+			return name;
+		}
+		
+		public String getParameterValue() {
+			if (parameterValueIndex == -1) {
+				getParameterName();
+			}
+			
+			final ByteBuf content = content();
+			content.readerIndex(parameterValueIndex);
+			return readCString(content);
 		}
 	}
 	

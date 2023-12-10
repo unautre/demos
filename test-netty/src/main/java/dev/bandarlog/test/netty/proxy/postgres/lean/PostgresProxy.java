@@ -41,7 +41,7 @@ public final class PostgresProxy {
 		protected void initChannel(SocketChannel ch) throws Exception {
 			ch.pipeline().addLast( //
 					new LoggingHandler(LogLevel.ERROR), //
-//					new PostgresResponseEncoder(), //
+					new PostgresEncoder(), //
 					new PostgresRequestDecoder(), //
 					new LoginStealer(), //
 					new ProxyFrontendHandler("localhost", 5432, new ProxyBackendInitializer())
@@ -55,6 +55,7 @@ public final class PostgresProxy {
 		protected void initChannel(SocketChannel ch) throws Exception {
 			ch.pipeline().addLast( //
 					new PostgresEncoder(), //
+					new PostgresResponseDecoder(), //
 					new LoggingHandler(LogLevel.ERROR) //
 			);
 		}

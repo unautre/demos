@@ -49,7 +49,7 @@ public class PostgresRequestDecoder extends ByteToMessageDecoder {
 				return;
 
 			final byte name = in.getByte(in.readerIndex());
-			final int totalSize = in.getInt(in.readerIndex() + 1);
+			final int totalSize = in.getInt(in.readerIndex() + 1) + 1;
 
 			if (in.readableBytes() < totalSize) {
 				return;
