@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.netty.buffer.ByteBuf;
@@ -41,8 +42,8 @@ public class PostgresMessages extends DefaultByteBufHolder {
 			final ByteBuf buf = content();
 			buf.readerIndex(8);
 			
-			final Map<String, String> map = new HashMap<>();
-			while (buf.isReadable()) {
+			final Map<String, String> map = new LinkedHashMap<>();
+			while (buf.readableBytes() > 1) {
 				final String key = readCString(buf);
 				final String value = readCString(buf);
 				
@@ -112,6 +113,8 @@ public class PostgresMessages extends DefaultByteBufHolder {
 			SASL(10), //
 			SASL_CONTINUE(11), //
 			SASL_FINAL(12), //
+			//
+			UNKNOWN(-1), //
 			;
 			
 			private final int value;
@@ -119,6 +122,17 @@ public class PostgresMessages extends DefaultByteBufHolder {
 			private AuthenticationResponseType(int value) {
 				this.value = value;
 			}
+		}
+		
+		public AuthenticationResponseType getAuthenticationResponseType() {
+			final int type = content().getInt(PAYLOAD_START);
+			
+			for (AuthenticationResponseType value : AuthenticationResponseType.values()) {
+				if (value.value == type) {
+					return value;
+				}
+			}
+			return AuthenticationResponseType.UNKNOWN;
 		}
 	}
 	
@@ -149,6 +163,38 @@ public class PostgresMessages extends DefaultByteBufHolder {
 			final ByteBuf content = content();
 			content.readerIndex(parameterValueIndex);
 			return readCString(content);
+		}
+	}
+	
+	public static class BackendKeyData extends PostgresMessages {
+		
+		BackendKeyData(ByteBuf data) {
+			super(data);
+		}
+		
+		public int getProcessId() {
+			return content().getInt(PAYLOAD_START);
+		}
+		
+		public int getSecretKey() {
+			return content().getInt(PAYLOAD_START + 4);
+		}
+	}
+	
+	public static class ReadyForQuery extends PostgresMessages {
+		
+		ReadyForQuery(ByteBuf data) {
+			super(data);
+		}
+		
+		enum TransactionStatusIndicator {
+			I, T, E
+		}
+		
+		public TransactionStatusIndicator getTransactionStatusIndicator() {
+			final byte readen = content().getByte(PAYLOAD_START);
+			
+			return TransactionStatusIndicator.valueOf(Character.toString(readen));
 		}
 	}
 	

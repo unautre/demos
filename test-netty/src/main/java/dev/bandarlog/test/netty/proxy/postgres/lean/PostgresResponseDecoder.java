@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dev.bandarlog.test.netty.proxy.postgres.lean.PostgresMessages.AuthenticationResponse;
+import dev.bandarlog.test.netty.proxy.postgres.lean.PostgresMessages.BackendKeyData;
 import dev.bandarlog.test.netty.proxy.postgres.lean.PostgresMessages.ParameterStatus;
+import dev.bandarlog.test.netty.proxy.postgres.lean.PostgresMessages.ReadyForQuery;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -44,9 +46,15 @@ public class PostgresResponseDecoder extends ByteToMessageDecoder {
 		case 'S':
 			msg = new ParameterStatus(in);
 			break;
+		case 'K':
+			msg = new BackendKeyData(in);
+			break;
+		case 'Z':
+			msg = new ReadyForQuery(in);
+			break;
 		default:
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Unhandled message type {}: passing generic message", name);
+				LOGGER.debug("Unhandled message type {}: passing generic message", Character.toString(name));
 			}
 			msg = new PostgresMessages(in);
 			break;
