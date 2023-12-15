@@ -117,7 +117,7 @@ public class PostgresMessages extends DefaultByteBufHolder {
 			UNKNOWN(-1), //
 			;
 			
-			private final int value;
+			public final int value;
 			
 			private AuthenticationResponseType(int value) {
 				this.value = value;
@@ -133,6 +133,10 @@ public class PostgresMessages extends DefaultByteBufHolder {
 				}
 			}
 			return AuthenticationResponseType.UNKNOWN;
+		}
+		
+		public String getPayload() {
+			return readCString(content().readerIndex(PAYLOAD_START + 4));
 		}
 	}
 	
@@ -195,6 +199,27 @@ public class PostgresMessages extends DefaultByteBufHolder {
 			final byte readen = content().getByte(PAYLOAD_START);
 			
 			return TransactionStatusIndicator.valueOf(Character.toString(readen));
+		}
+	}
+	
+	public static class ErrorResponse extends PostgresMessages {
+		
+		ErrorResponse(ByteBuf data) {
+			super(data);
+		}
+		
+		public Map<Character, String> getContent() {
+			final Map<Character, String> map = new LinkedHashMap<>();
+			
+			content().readerIndex(PAYLOAD_START);
+			while(content().isReadable()) {
+				final Character c = Character.valueOf((char) content().readByte());
+				final String value = readCString(content());
+				
+				map.put(c, value);
+			}
+			
+			return map;
 		}
 	}
 	
