@@ -56,8 +56,8 @@ public final class PostgresProxy {
 		protected void initChannel(SocketChannel ch) throws Exception {
 			ch.pipeline().addLast( //
 					new PostgresEncoder(), //
-					new PostgresResponseDecoder(), //
-					new LoggingHandler(LogLevel.ERROR) //
+					new PostgresResponseDecoder() //
+//					new LoggingHandler(LogLevel.ERROR) //
 			);
 		}
 	}
