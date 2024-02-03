@@ -1,4 +1,4 @@
-package dev.bandarlog.test.netty.proxy.postgres.lean;
+package dev.bandarlog.test.netty.proxy.postgres.lean.codec;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -102,7 +102,7 @@ public class PostgresMessages extends DefaultByteBufHolder {
 			super(data);
 		}
 		
-		enum AuthenticationResponseType {
+		public enum AuthenticationResponseType {
 			OK(0), //
 			KERBEROS_V5(2), //
 			CLEARTEXT(3), //

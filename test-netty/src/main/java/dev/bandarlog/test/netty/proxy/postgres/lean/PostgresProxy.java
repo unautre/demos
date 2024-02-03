@@ -1,6 +1,11 @@
 package dev.bandarlog.test.netty.proxy.postgres.lean;
 
 import dev.bandarlog.test.netty.proxy.logic.ProxyFrontendHandler;
+import dev.bandarlog.test.netty.proxy.postgres.lean.auth.LoginStealer;
+import dev.bandarlog.test.netty.proxy.postgres.lean.auth.SSLStripper;
+import dev.bandarlog.test.netty.proxy.postgres.lean.codec.PostgresEncoder;
+import dev.bandarlog.test.netty.proxy.postgres.lean.codec.PostgresRequestDecoder;
+import dev.bandarlog.test.netty.proxy.postgres.lean.codec.PostgresResponseDecoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -56,8 +61,8 @@ public final class PostgresProxy {
 		protected void initChannel(SocketChannel ch) throws Exception {
 			ch.pipeline().addLast( //
 					new PostgresEncoder(), //
-					new PostgresResponseDecoder() //
-//					new LoggingHandler(LogLevel.ERROR) //
+					new PostgresResponseDecoder(), //
+					new LoggingHandler(LogLevel.ERROR) //
 			);
 		}
 	}

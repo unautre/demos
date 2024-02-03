@@ -1,15 +1,15 @@
-package dev.bandarlog.test.netty.proxy.postgres.lean;
+package dev.bandarlog.test.netty.proxy.postgres.lean.codec;
 
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dev.bandarlog.test.netty.proxy.postgres.lean.PostgresMessages.Password;
-import dev.bandarlog.test.netty.proxy.postgres.lean.PostgresMessages.Query;
-import dev.bandarlog.test.netty.proxy.postgres.lean.PostgresMessages.StartupMessage;
-import dev.bandarlog.test.netty.proxy.postgres.lean.PostgresMessages.Sync;
-import dev.bandarlog.test.netty.proxy.postgres.lean.PostgresMessages.Terminate;
+import dev.bandarlog.test.netty.proxy.postgres.lean.codec.PostgresMessages.Password;
+import dev.bandarlog.test.netty.proxy.postgres.lean.codec.PostgresMessages.Query;
+import dev.bandarlog.test.netty.proxy.postgres.lean.codec.PostgresMessages.StartupMessage;
+import dev.bandarlog.test.netty.proxy.postgres.lean.codec.PostgresMessages.Sync;
+import dev.bandarlog.test.netty.proxy.postgres.lean.codec.PostgresMessages.Terminate;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;

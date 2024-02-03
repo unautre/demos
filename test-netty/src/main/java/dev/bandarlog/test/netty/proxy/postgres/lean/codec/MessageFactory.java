@@ -1,11 +1,11 @@
-package dev.bandarlog.test.netty.proxy.postgres.lean;
+package dev.bandarlog.test.netty.proxy.postgres.lean.codec;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import dev.bandarlog.test.netty.proxy.postgres.lean.PostgresMessages.Password;
-import dev.bandarlog.test.netty.proxy.postgres.lean.PostgresMessages.AuthenticationResponse;
-import dev.bandarlog.test.netty.proxy.postgres.lean.PostgresMessages.AuthenticationResponse.AuthenticationResponseType;
+import dev.bandarlog.test.netty.proxy.postgres.lean.codec.PostgresMessages.AuthenticationResponse;
+import dev.bandarlog.test.netty.proxy.postgres.lean.codec.PostgresMessages.Password;
+import dev.bandarlog.test.netty.proxy.postgres.lean.codec.PostgresMessages.AuthenticationResponse.AuthenticationResponseType;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 

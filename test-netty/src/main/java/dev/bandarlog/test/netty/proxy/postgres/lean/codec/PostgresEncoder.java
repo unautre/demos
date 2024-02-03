@@ -1,4 +1,4 @@
-package dev.bandarlog.test.netty.proxy.postgres.lean;
+package dev.bandarlog.test.netty.proxy.postgres.lean.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
