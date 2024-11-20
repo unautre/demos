@@ -16,5 +16,6 @@
         <module>spring-security-opa-test</module>
         <module>tinkerpop-opa-plugin</module>
         <module>tinkerpop-kube-graphmanager</module>
+        <module>bsky-test</module>
     </modules>
 </project>
