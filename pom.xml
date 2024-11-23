@@ -21,5 +21,6 @@
 		<module>auto-indexer</module>
     <module>test-netty</module>
     <module>test-antlr</module>
+    <module>tikv-test</module>
 	</modules>
 </project>

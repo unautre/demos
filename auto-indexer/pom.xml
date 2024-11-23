@@ -16,5 +16,12 @@
 			<version>0.5.3</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.janusgraph</groupId>
+			<artifactId>janusgraph-cql</artifactId>
+			<version>0.5.3</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 </project>
