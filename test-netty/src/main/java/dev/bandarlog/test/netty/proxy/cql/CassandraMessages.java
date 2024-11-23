@@ -3,6 +3,8 @@ package dev.bandarlog.test.netty.proxy.cql;
 import java.util.List;
 import java.util.Map;
 
+import dev.bandarlog.test.netty.proxy.cql.CqlUtils.Consistency;
+
 public class CassandraMessages {
 
 	boolean response;
@@ -98,7 +100,46 @@ public class CassandraMessages {
 		
 		public String query;
 		
-		// TODO
+		public Consistency consistency;
+		
+		public byte queryFlags;
+
+		public List<String> values;
+		
+		public Map<String, String> namedValues;
+		
+		public Integer resultPageSize;
+		
+		public Byte pagingState;
+		
+		public Consistency serialConsistency;
+		
+		public Long timestamp;
+		
+		public static byte VALUES = 0x1;
+		public static byte SKIP_METADATA = 0x2;
+		public static byte PAGE_SIZE = 0x4;
+		public static byte WITH_PAGING_STATE = 0x8;
+		public static byte WITH_SERIAL_CONSISTENCY = 0x10;
+		public static byte WITH_DEFAULT_TIMESTAMP = 0x20;
+		public static byte WITH_NAMES_FOR_VALUES = 0x40;
+	}
+	
+	public static class Result extends CassandraMessages {
+		
+		public static final byte OPCODE = 0x08;
+		
+		public Result() {
+			super(OPCODE);
+		}
+		
+		public int kind;
+		
+		public static int VOID = 1;
+		public static int ROWS = 2;
+		public static int SET_KEYSPACE = 3;
+		public static int PREPARED = 4;
+		public static int SCHEMA_CHANGE = 5;
 	}
 	
 	public static class Register extends CassandraMessages {

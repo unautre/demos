@@ -75,6 +75,12 @@ public class CqlUtils {
 
 		return in.readCharSequence(total, CHARSET).toString();
 	}
+	
+	static String readLongString(ByteBuf in) {
+		final int total = in.readInt();
+
+		return in.readCharSequence(total, CHARSET).toString();
+	}
 
 	static void writeStringMultiMap(ByteBuf in, Map<String, List<String>> map) {
 		in.writeShort((short) (map.size() & 0xFFFF));
@@ -110,7 +116,40 @@ public class CqlUtils {
 		in.setShort(sizeIndex, size);
 	}
 	
+	static void writeLongString(ByteBuf in, String s) {
+		final int sizeIndex = in.writerIndex();
+		in.writeInt(0);
+
+		final int size = in.writeCharSequence(s, CHARSET);
+		in.setInt(sizeIndex, size);
+	}
+	
 	public enum Consistency {
+        ANY ((short)0x0000), //
+        ONE ((short)0x0001), //
+        TWO ((short)0x0002), //
+        THREE ((short)0x0003), //
+        QUORUM ((short)0x0004), //
+        ALL ((short)0x0005), //
+        LOCAL_QUORUM ((short)0x0006), //
+        EACH_QUORUM ((short)0x0007), //
+        SERIAL ((short)0x0008), //
+        LOCAL_SERIAL ((short)0x0009), //
+        LOCAL_ONE ((short)0x000A), //
+        ;
 		
+		public final short value;
+		
+		private Consistency(short value) {
+			this.value = value;
+		}
+		
+		public static Consistency valueOf(short value) {
+			for (Consistency consistency : values()) {
+				if (consistency.value == value) 
+					return consistency;
+			}
+			return null;
+		}
 	}
 }

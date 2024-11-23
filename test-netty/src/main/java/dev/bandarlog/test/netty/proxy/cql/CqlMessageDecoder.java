@@ -1,18 +1,23 @@
 package dev.bandarlog.test.netty.proxy.cql;
 
+import static dev.bandarlog.test.netty.proxy.cql.CqlUtils.readLongString;
 import static dev.bandarlog.test.netty.proxy.cql.CqlUtils.readString;
 import static dev.bandarlog.test.netty.proxy.cql.CqlUtils.readStringList;
 import static dev.bandarlog.test.netty.proxy.cql.CqlUtils.readStringMap;
 import static dev.bandarlog.test.netty.proxy.cql.CqlUtils.readStringMultiMap;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import dev.bandarlog.test.netty.proxy.cql.CassandraMessages.Error;
 import dev.bandarlog.test.netty.proxy.cql.CassandraMessages.Options;
+import dev.bandarlog.test.netty.proxy.cql.CassandraMessages.Query;
 import dev.bandarlog.test.netty.proxy.cql.CassandraMessages.Ready;
 import dev.bandarlog.test.netty.proxy.cql.CassandraMessages.Register;
+import dev.bandarlog.test.netty.proxy.cql.CassandraMessages.Result;
 import dev.bandarlog.test.netty.proxy.cql.CassandraMessages.Startup;
 import dev.bandarlog.test.netty.proxy.cql.CassandraMessages.Supported;
+import dev.bandarlog.test.netty.proxy.cql.CqlUtils.Consistency;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -57,7 +62,7 @@ public class CqlMessageDecoder extends ByteToMessageDecoder {
 			startup.payload = readStringMap(in);
 			m = startup;
 			break;
-		case Ready.OPCODE:
+		case Ready.OPCODE: // 0x2
 			final Ready ready = new Ready();
 			m = ready;
 			break;
@@ -70,6 +75,30 @@ public class CqlMessageDecoder extends ByteToMessageDecoder {
 			supported.payload = readStringMultiMap(in);
 			m = supported;
 			break;
+		case Query.OPCODE: // 0x7
+			final Query query = new Query();
+			
+			query.query = readLongString(in);
+			query.consistency = Consistency.valueOf(in.readShort());
+			query.flags = in.readByte();
+			
+			if ((query.flags & Query.VALUES) != 0) {
+				final short numberOfValues = in.readShort();
+				
+				
+				if ((query.flags & Query.WITH_NAMES_FOR_VALUES) != 0) {
+					query.namedValues = new LinkedHashMap<>();
+					
+					for (int i = 0; i < numberOfValues; i++) {
+//						final 
+					}
+				}
+				throw new UnsupportedOperationException();
+			}
+			break;
+		case Result.OPCODE:
+			final Result result = new Result();
+//			result.
 		case Register.OPCODE: // 0xB
 			final Register register = new Register();
 			register.eventTypes = readStringList(in);
