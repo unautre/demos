@@ -103,7 +103,7 @@ dist
 # TernJS port file
 .tern-port
 
-.classpath
-.project
-.settings
 target/
+.project
+.classpath
+.settings
